@@ -29,6 +29,10 @@ class SmartBulb(SmartDevice):
             "brightness": self._brightness,
         }
 
+    def update_state(self) -> None:
+        # bulb state doesn't change over time unless commanded
+        pass
+
     def execute_command(self, command: str) -> None:
         # NOTE: there are no automatic (self-applied) commands for bulbs
         #  but changes happen from user input, which get

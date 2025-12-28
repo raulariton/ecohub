@@ -1,6 +1,7 @@
 from datetime import datetime
 from .SmartDevice import SmartDevice
 from dataclasses import dataclass
+import random
 
 
 @dataclass
@@ -38,6 +39,13 @@ class SmartCamera(SmartDevice):
             ),
             "device_type": self._device_type,
         }
+
+    def update_state(self) -> None:
+        # simulate motion detection randomly
+        self._motion_detected = random.choice([True, False])
+
+        # decrease battery level over time
+        self._battery_level -= 0.25 if self._battery_level > 0 else 0
 
     def execute_command(self, command: str) -> None:
         if command == "take_snapshot":

@@ -23,6 +23,10 @@ class SmartDevice(ABC):
     def execute_command(self, command: str) -> None:
         pass
 
+    @abstractmethod
+    def update_state(self) -> None:
+        pass
+
     async def connect(self, controller: Controller) -> None:
         # simulate connection (async io delay)
         self._controller_queue = await controller.connect()
@@ -40,5 +44,8 @@ class SmartDevice(ABC):
             }
 
             await self._controller_queue.put(json.dumps(packet))
+
+            # update device state to simulate changes over time
+            self.update_state()
 
             await asyncio.sleep(5)  # send status every 5 seconds

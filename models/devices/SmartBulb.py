@@ -1,6 +1,15 @@
 import uuid
-from models.DeviceLocation import DeviceLocation
-from models.SmartDevice import SmartDevice
+from models import DeviceLocation
+from .SmartDevice import SmartDevice
+from dataclasses import dataclass
+
+@dataclass
+class BulbPayload:
+    device_id: str
+    name: str
+    location: str
+    is_on: bool
+    brightness: int
 
 
 class SmartBulb(SmartDevice):
@@ -21,10 +30,15 @@ class SmartBulb(SmartDevice):
         }
 
     def execute_command(self, command: str) -> None:
+        # NOTE: there are no automatic (self-applied) commands for bulbs
+        #  but changes happen from user input, which get
+        #  reflected to the controller
         if command == "turn_on":
             self._is_on = True
+            self._brightness = 100
         elif command == "turn_off":
             self._is_on = False
+            self._brightness = 0
         elif command.startswith("set_brightness"):
             _, value = command.split()
             self._brightness = int(value)

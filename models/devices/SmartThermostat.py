@@ -1,4 +1,14 @@
-from models.SmartDevice import SmartDevice
+from dataclasses import dataclass
+from .SmartDevice import SmartDevice
+
+@dataclass
+class ThermostatPayload:
+    device_id: str
+    name: str
+    location: str
+    current_temp: float
+    target_temp: float
+    humidity: float
 
 
 class SmartThermostat(SmartDevice):

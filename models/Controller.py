@@ -2,6 +2,7 @@ import asyncio
 
 from models.AnalyticsEngine import AnalyticsEngine
 
+
 class Controller:
     def __init__(self):
         # storing received packets
@@ -34,14 +35,3 @@ class Controller:
                 await self._storage_queue.put(payload)
 
             self._storage_queue.task_done()
-
-
-
-
-
-
-        # while True:
-        #     for connection in self.connections:
-        #         async with connection:
-        #             packet = await connection._packet_queue.get()
-        #             await self.queue.put(packet)

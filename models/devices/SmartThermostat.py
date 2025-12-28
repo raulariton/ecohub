@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from .SmartDevice import SmartDevice
 
+
 @dataclass
 class ThermostatPayload:
     device_id: str
@@ -12,8 +13,6 @@ class ThermostatPayload:
 
 
 class SmartThermostat(SmartDevice):
-    # NOTE: The idea is that when a device connects to the system,
-    #  it provides basic data about itself
     def __init__(self, name, location, current_temp, target_temp, humidity):
         super().__init__(name, location)
         self._current_temp = current_temp

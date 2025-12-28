@@ -1,7 +1,7 @@
-import uuid
 from models import DeviceLocation
 from .SmartDevice import SmartDevice
 from dataclasses import dataclass
+
 
 @dataclass
 class BulbPayload:

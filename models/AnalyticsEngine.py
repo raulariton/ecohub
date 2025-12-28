@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from models.devices import ThermostatPayload, BulbPayload, CameraPayload
 
+
 # NOTE: if we eventually use a dashboard,
 #  whether an event is critical or not can be selected by the user
 #  and this function will parse that configuration
@@ -22,7 +23,6 @@ def is_critical(payload) -> bool:
 
 
 class AnalyticsEngine:
-
     @staticmethod
     def map_packet(packet):
         packet_data = json.loads(packet)

@@ -21,7 +21,6 @@ class SmartDevice(ABC):
 
     @abstractmethod
     def execute_command(self, command: str) -> None:
-        # no idea rn
         pass
 
     async def connect(self, controller: Controller) -> None:
@@ -37,7 +36,7 @@ class SmartDevice(ABC):
             packet = {
                 "device_id": str(self._id),
                 "timestamp": datetime.now().isoformat(),
-                "payload": status
+                "payload": status,
             }
 
             await self._controller_queue.put(json.dumps(packet))

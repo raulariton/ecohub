@@ -1,13 +1,10 @@
 import asyncio
-from queue import Queue
 
 from models.devices import *
 from models import Controller, DeviceLocation
 
 
-async def main():
-    storage_queue = Queue()
-
+async def main(controller: Controller):
     devices = [
         SmartCamera("Garage Camera", DeviceLocation.GARAGE, 100),
         SmartBulb("Bedroom Light", DeviceLocation.BEDROOM, 100),
@@ -15,8 +12,6 @@ async def main():
             "Living Room Thermostat", DeviceLocation.LIVING_ROOM, 22.0, 23.0, 30.0
         ),
     ]
-
-    controller = Controller()
 
     async with asyncio.TaskGroup() as tg:
         tg.create_task(controller.consume())
@@ -26,7 +21,13 @@ async def main():
 
 
 if __name__ == "__main__":
+    # initialize controller
+    controller = Controller()
     try:
-        asyncio.run(main())
+        asyncio.run(main(controller))
     except KeyboardInterrupt:
         print("Shutting down IoT system...")
+
+        # end storage worker thread
+        # by inserting "None" into storage queue
+        controller.end_storage_thread()

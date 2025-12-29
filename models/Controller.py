@@ -1,17 +1,29 @@
 import asyncio
+import queue
+import threading
 
 from models.AnalyticsEngine import AnalyticsEngine
 from models.devices import SmartDevice
 from .CriticalEvent import CriticalEvent
+from .StorageWorker import StorageWorker
 
 
 class Controller:
     def __init__(self):
         # storing received packets
         self._packet_queue = asyncio.Queue()
-        # storing payloads to be written to storage
-        self._storage_queue = asyncio.Queue()
         self._connected_devices: list[SmartDevice] = []
+
+        # initialize storage queue and storage worker
+        self._storage_queue = queue.Queue()
+        self._storage_worker = StorageWorker(self._storage_queue)
+
+        # start storage worker in a separate thread
+        self._storage_worker_thread = threading.Thread(
+            target=self._storage_worker.run,
+            daemon=False,
+        )
+        self._storage_worker_thread.start()
 
     async def connect(self, device: SmartDevice) -> asyncio.Queue:
         """
@@ -90,6 +102,11 @@ class Controller:
 
             # send payloads to storage queue
             for payload in payloads:
-                await self._storage_queue.put(payload)
+                self._storage_queue.put(payload)
 
             self._storage_queue.task_done()
+
+    def end_storage_thread(self):
+        # send None to storage queue to signal worker to stop
+        self._storage_queue.put(None)
+        self._storage_worker_thread.join()

@@ -1,15 +1,27 @@
+from queue import Queue
+
+
 class StorageWorker:
-    def __init__(self, queue):
+    def __init__(self, queue: Queue):
         self._queue = queue
 
     def run(self):
         # runs in a separate thread
 
-        while True:
-            if not self._queue.empty():
-                data = self._queue.get()
-                # store data to persistent storage
-                print(f"Storing data: {data}")
+        with open("history.log", "w") as file:
+            while True:
+                # this will block
+                # until there is something in the queue
+                log = self._queue.get()
 
-                # mark task as done
-                self._queue.task_done()
+                # condition to explicitly break the loop and
+                # end thread
+                # if there is 'None' in the queue, we break
+                if log is None:
+                    break
+
+                # write log in file
+                file.write(f"{log}\n")
+                # flush to write immediately
+                file.flush()
+

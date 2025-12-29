@@ -25,6 +25,7 @@ class SmartCamera(SmartDevice):
         self._motion_detected = False  # start with no motion detected by default
         self._battery_level = battery_level
         self._last_snapshot = None  # no snapshot yet since no motion detected
+        self._is_on = True
         self._device_type = "CAMERA"
 
     def get_status(self) -> dict:
@@ -49,7 +50,10 @@ class SmartCamera(SmartDevice):
 
     def execute_command(self, command: str) -> None:
         if command == "take_snapshot":
-            # take a snapshot
-            self._last_snapshot = datetime.now()
+            # take a snapshot only if on
+            if self._is_on:
+                self._last_snapshot = datetime.now()
+        elif command == "turn_off":
+            self._is_on = False
         else:
             print(f"Unknown command: {command}")

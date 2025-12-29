@@ -47,25 +47,27 @@ class Controller:
             # set to a safe temperature
             device.execute_command("set_target_temp 20.0")
             print(
-                f"[WARNING]: {device.name} temperature too low! Adjusting target temperature."
+                f"[CRITICAL]: {device.name} temperature too low! Adjusting target temperature."
             )
         elif critical_event == CriticalEvent.HIGH_TEMPERATURE:
             # set to a safe, non-freezing temperature
             device.execute_command("set_target_temp 17.0")
             print(
-                f"[WARNING]: {device.name} temperature too high! Adjusting target temperature."
+                f"[CRITICAL]: {device.name} temperature too high! Adjusting target temperature."
             )
         elif critical_event == CriticalEvent.LOW_HUMIDITY:
             # increase humidity by adjusting target temperature
             device.execute_command("set_target_temp 22.0")
             print(
-                f"[WARNING]: {device.name} humidity too low! Adjusting target temperature to increase humidity."
+                f"[CRITICAL]: {device.name} humidity too low! Adjusting target temperature to increase "
+                f"humidity."
             )
         elif critical_event == CriticalEvent.HIGH_HUMIDITY:
             # decrease humidity by adjusting target temperature
             device.execute_command("set_target_temp 18.0")
             print(
-                f"[WARNING]: {device.name} humidity too high! Adjusting target temperature to decrease humidity."
+                f"[CRITICAL]: {device.name} humidity too high! Adjusting target temperature to decrease "
+                f"humidity."
             )
 
         elif critical_event == CriticalEvent.MOTION_DETECTED:
@@ -74,14 +76,14 @@ class Controller:
             #  snapshot
             device.execute_command("take_snapshot")
             print(
-                f"[WARNING]: Motion detected by {device.name}! Attempting to take a snapshot."
+                f"[CRITICAL]: Motion detected by {device.name}! Attempting to take a snapshot."
             )
         elif critical_event == CriticalEvent.LOW_BATTERY:
             # turn off camera to save power
             #  the controller does not know if the camera is already off, only attempts to turn it off
             device.execute_command("turn_off")
             print(
-                f"[WARNING]: {device.name} battery low! Turning off camera to save power."
+                f"[CRITICAL]: {device.name} battery low! Turning off camera to save power."
             )
 
     async def consume(self):

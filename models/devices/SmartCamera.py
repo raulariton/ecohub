@@ -35,7 +35,7 @@ class SmartCamera(SmartDevice):
             "motion_detected": self._motion_detected,
             "battery_level": self._battery_level,
             "last_snapshot": (
-                self._last_snapshot.toisoformat() if self._last_snapshot else None
+                self._last_snapshot.isoformat() if self._last_snapshot else None
             ),
             "device_type": self._device_type,
         }

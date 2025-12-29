@@ -29,7 +29,7 @@ class SmartDevice(ABC):
 
     async def connect(self, controller: Controller) -> None:
         # simulate connection (async io delay)
-        self._controller_queue = await controller.connect()
+        self._controller_queue = await controller.connect(self)
         print(f"Device {self._name} connected.")
 
     async def run(self, controller: Controller) -> None:
@@ -49,3 +49,11 @@ class SmartDevice(ABC):
             self.update_state()
 
             await asyncio.sleep(5)  # send status every 5 seconds
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def name(self):
+        return self._name

@@ -1,25 +1,37 @@
 import json
 from datetime import datetime
 from models.devices import ThermostatPayload, BulbPayload, CameraPayload
+from .CriticalEvent import CriticalEvent
 
 
 # NOTE: if we eventually use a dashboard,
 #  whether an event is critical or not can be selected by the user
 #  and this function will parse that configuration
-def is_critical(payload) -> bool:
-    return True  # treat all events as critical for now
+def is_critical(payload) -> CriticalEvent | None:
+    # if payload is from a thermostat
+    if isinstance(payload, ThermostatPayload):
+        if payload.current_temp < 15.0:
+            return CriticalEvent.LOW_TEMPERATURE
 
+        if payload.current_temp > 30.0:
+            return CriticalEvent.HIGH_TEMPERATURE
 
-"""
-{
-    "device_id": "123e4567-e89b-12d3-a456-426614174000",
-    "payload": {
-        "temperature": 22.5,
-        "humidity": 45.0
-    },
-    "timestamp": "2023-10-01T12:00:00Z"
-}
-"""
+        # low humidity alert
+        if payload.humidity < 15.0:
+            return CriticalEvent.LOW_HUMIDITY
+
+        if payload.humidity > 80.0:
+            return CriticalEvent.HIGH_HUMIDITY
+
+    # if payload is from a camera
+    elif isinstance(payload, CameraPayload):
+        if payload.motion_detected:
+            return CriticalEvent.MOTION_DETECTED
+
+        if payload.battery_level < 15.0:
+            return CriticalEvent.LOW_BATTERY
+
+    return None
 
 
 class AnalyticsEngine:
@@ -65,7 +77,14 @@ class AnalyticsEngine:
 
     @staticmethod
     def filter_events(stream):
-        return filter(is_critical, stream)
+        # filter payloads for critical events only
+        critical_payloads = filter(
+            lambda payload: is_critical(payload) is not None, stream
+        )
+
+        # attach critical event type to payload
+        for payload in critical_payloads:
+            yield (payload, is_critical(payload))
 
     @staticmethod
     def reduce(stream) -> dict:

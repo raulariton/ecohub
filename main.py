@@ -6,10 +6,10 @@ from models import Controller, DeviceLocation
 
 async def main(controller: Controller):
     devices = [
-        SmartCamera("Garage Camera", DeviceLocation.GARAGE, 100),
+        SmartCamera("Garage Camera", DeviceLocation.GARAGE, 20),
         SmartBulb("Bedroom Light", DeviceLocation.BEDROOM, 100),
         SmartThermostat(
-            "Living Room Thermostat", DeviceLocation.LIVING_ROOM, 22.0, 23.0, 30.0
+            "Living Room Thermostat", DeviceLocation.LIVING_ROOM, 12.0, 23.0, 30.0
         ),
     ]
 

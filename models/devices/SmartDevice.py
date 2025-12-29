@@ -62,7 +62,7 @@ class SmartDevice(ABC):
             # update device state to simulate changes over time
             self.update_state()
 
-            await asyncio.sleep(5)  # send status every 5 seconds
+            await asyncio.sleep(1)  # send status every 5 seconds
 
     @property
     def id(self):

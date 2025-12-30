@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 from models.devices import ThermostatPayload, BulbPayload, CameraPayload
 from .CriticalEvent import CriticalEvent
+from .DeviceLocation import DeviceLocation
 
 
 # NOTE: if we eventually use a dashboard,
@@ -46,7 +47,7 @@ class AnalyticsEngine:
             yield ThermostatPayload(
                 device_id=packet_data["device_id"],
                 name=packet_data["payload"]["name"],
-                location=packet_data["payload"]["location"],
+                location=DeviceLocation(packet_data["payload"]["location"]),
                 current_temp=packet_data["payload"]["current_temp"],
                 target_temp=packet_data["payload"]["target_temp"],
                 humidity=packet_data["payload"]["humidity"],
@@ -55,7 +56,7 @@ class AnalyticsEngine:
             yield BulbPayload(
                 device_id=packet_data["device_id"],
                 name=packet_data["payload"]["name"],
-                location=packet_data["payload"]["location"],
+                location=DeviceLocation(packet_data["payload"]["location"]),
                 is_on=packet_data["payload"]["is_on"],
                 brightness=packet_data["payload"]["brightness"],
             )
@@ -63,7 +64,7 @@ class AnalyticsEngine:
             yield CameraPayload(
                 device_id=packet_data["device_id"],
                 name=packet_data["payload"]["name"],
-                location=packet_data["payload"]["location"],
+                location=DeviceLocation(packet_data["payload"]["location"]),
                 motion_detected=packet_data["payload"]["motion_detected"],
                 battery_level=packet_data["payload"]["battery_level"],
                 last_snapshot=(

@@ -1,13 +1,10 @@
 from models import DeviceLocation
-from .SmartDevice import SmartDevice
+from .SmartDevice import SmartDevice, DevicePayload
 from dataclasses import dataclass
 
 
 @dataclass
-class BulbPayload:
-    device_id: str
-    name: str
-    location: str
+class BulbPayload(DevicePayload):
     is_on: bool
     brightness: int
 

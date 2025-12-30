@@ -1,14 +1,11 @@
 from datetime import datetime
-from .SmartDevice import SmartDevice
+from .SmartDevice import SmartDevice, DevicePayload
 from dataclasses import dataclass
 import random
 
 
 @dataclass
-class CameraPayload:
-    device_id: str
-    name: str
-    location: str
+class CameraPayload(DevicePayload):
     motion_detected: bool
     battery_level: int
     last_snapshot: datetime | None

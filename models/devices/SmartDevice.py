@@ -2,9 +2,17 @@ import json
 from abc import ABC, abstractmethod
 import uuid
 from datetime import datetime
+from dataclasses import dataclass
 
 from models import Controller, DeviceLocation
 import asyncio
+
+
+@dataclass
+class DevicePayload:
+    device_id: str
+    name: str
+    location: DeviceLocation
 
 
 class SmartDevice(ABC):

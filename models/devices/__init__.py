@@ -1,4 +1,4 @@
-from .SmartDevice import SmartDevice
+from .SmartDevice import SmartDevice, DevicePayload
 from .SmartBulb import SmartBulb, BulbPayload
 from .SmartThermostat import SmartThermostat, ThermostatPayload
 from .SmartCamera import SmartCamera, CameraPayload
@@ -11,4 +11,5 @@ __all__ = [
     "BulbPayload",
     "ThermostatPayload",
     "CameraPayload",
+    "DevicePayload",
 ]

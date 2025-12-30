@@ -1,12 +1,9 @@
 from dataclasses import dataclass
-from .SmartDevice import SmartDevice
+from .SmartDevice import SmartDevice, DevicePayload
 
 
 @dataclass
-class ThermostatPayload:
-    device_id: str
-    name: str
-    location: str
+class ThermostatPayload(DevicePayload):
     current_temp: float
     target_temp: float
     humidity: float

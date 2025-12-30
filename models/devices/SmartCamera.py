@@ -50,7 +50,9 @@ class SmartCamera(SmartDevice):
             # take a snapshot only if on
             if self._is_on:
                 self._last_snapshot = datetime.now()
+                print(f"[{self._name}]: Snapshot taken at {self._last_snapshot}")
         elif command == "turn_off":
             self._is_on = False
+            print(f"[{self._name}]: Camera turned off")
         else:
             print(f"Unknown command: {command}")

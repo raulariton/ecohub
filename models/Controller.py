@@ -46,47 +46,52 @@ class Controller:
         )
 
         if critical_event == CriticalEvent.LOW_TEMPERATURE:
-            # set to a safe temperature
-            device.execute_command("set_target_temp 20.0")
-            print(
-                f"[CRITICAL]: {device.name} temperature too low! Adjusting target temperature."
-            )
+            # set to a safe temperature if not set to one
+            if payload.target_temp < 20.0:
+                device.execute_command("set_target_temp 20.0")
+                print(
+                    f"[CRITICAL]: {device.name} temperature too low! Adjusting target temperature."
+                )
         elif critical_event == CriticalEvent.HIGH_TEMPERATURE:
-            # set to a safe, non-freezing temperature
-            device.execute_command("set_target_temp 17.0")
-            print(
-                f"[CRITICAL]: {device.name} temperature too high! Adjusting target temperature."
-            )
+            # set to a safe, non-freezing temperature if not set to one
+            if payload.target_temp > 18.0:
+                device.execute_command("set_target_temp 18.0")
+                print(
+                    f"[CRITICAL]: {device.name} temperature too high! Adjusting target temperature."
+                )
         elif critical_event == CriticalEvent.LOW_HUMIDITY:
             # increase humidity by adjusting target temperature
-            device.execute_command("set_target_temp 22.0")
-            print(
-                f"[CRITICAL]: {device.name} humidity too low! Adjusting target temperature to increase "
-                f"humidity."
-            )
+            # if not already set to a high temp
+            if payload.target_temp < 22.0:
+                device.execute_command("set_target_temp 22.0")
+                print(
+                    f"[CRITICAL]: {device.name} humidity too low! Adjusting target temperature to increase "
+                    f"humidity."
+                )
         elif critical_event == CriticalEvent.HIGH_HUMIDITY:
             # decrease humidity by adjusting target temperature
-            device.execute_command("set_target_temp 18.0")
-            print(
-                f"[CRITICAL]: {device.name} humidity too high! Adjusting target temperature to decrease "
-                f"humidity."
-            )
+            if payload.target_temp > 18.0:
+                device.execute_command("set_target_temp 18.0")
+                print(
+                    f"[CRITICAL]: {device.name} humidity too high! Adjusting target temperature to decrease "
+                    f"humidity."
+                )
 
         elif critical_event == CriticalEvent.MOTION_DETECTED:
             # take a snapshot (if camera is on)
-            #  the controller does not know if the camera is on or off, only attempts to make it take a
-            #  snapshot
-            device.execute_command("take_snapshot")
-            print(
-                f"[CRITICAL]: Motion detected by {device.name}! Attempting to take a snapshot."
-            )
+            if payload.is_on:
+                device.execute_command("take_snapshot")
+                print(
+                    f"[CRITICAL]: Motion detected by {device.name}! Attempting to take a snapshot."
+                )
         elif critical_event == CriticalEvent.LOW_BATTERY:
             # turn off camera to save power
-            #  the controller does not know if the camera is already off, only attempts to turn it off
-            device.execute_command("turn_off")
-            print(
-                f"[CRITICAL]: {device.name} battery low! Turning off camera to save power."
-            )
+            # if camera is on
+            if payload.is_on:
+                device.execute_command("turn_off")
+                print(
+                    f"[CRITICAL]: {device.name} battery low! Turning off camera to save power."
+                )
 
     async def consume(self):
         while True:

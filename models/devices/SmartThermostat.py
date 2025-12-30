@@ -43,5 +43,6 @@ class SmartThermostat(SmartDevice):
         if command.startswith("set_target_temp"):
             _, value = command.split()
             self._target_temp = float(value)
+            print(f"[{self._name}]: target temperature set to {self._target_temp}°C")
         else:
             print(f"Unknown command: {command}")

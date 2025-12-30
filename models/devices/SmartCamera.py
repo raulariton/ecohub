@@ -9,6 +9,7 @@ class CameraPayload(DevicePayload):
     motion_detected: bool
     battery_level: int
     last_snapshot: datetime | None
+    is_on: bool
 
 
 class SmartCamera(SmartDevice):
@@ -36,6 +37,7 @@ class SmartCamera(SmartDevice):
                 self._last_snapshot.isoformat() if self._last_snapshot else None
             ),
             "device_type": self._device_type,
+            "is_on": self._is_on,
         }
 
     def update_state(self) -> None:

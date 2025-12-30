@@ -72,6 +72,7 @@ class AnalyticsEngine:
                     if packet_data["payload"]["last_snapshot"]
                     else None
                 ),
+                is_on=packet_data["payload"]["is_on"],
             )
         else:
             # unknown device type

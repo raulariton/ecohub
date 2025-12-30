@@ -30,12 +30,12 @@ class SmartThermostat(SmartDevice):
 
     def update_state(self) -> None:
         if self._current_temp < self._target_temp:
-            self._current_temp += 0.10  # slow heating
+            self._current_temp += 0.4  # slow heating
             # also increase humidity slightly when heating
             self._humidity += 0.02 if self._humidity < 100 else 0
 
         elif self._current_temp > self._target_temp:
-            self._current_temp -= 0.05  # slow cooling
+            self._current_temp -= 0.03  # slow cooling
             # decrease humidity slightly when cooling
             self._humidity -= 0.01 if self._humidity > 0 else 0
 

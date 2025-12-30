@@ -1,3 +1,4 @@
+import functools
 import json
 from datetime import datetime
 from models.devices import ThermostatPayload, BulbPayload, CameraPayload
@@ -87,7 +88,53 @@ class AnalyticsEngine:
             yield (payload, is_critical(payload))
 
     @staticmethod
-    def reduce(stream) -> dict:
-        # using `functools.reduce`, aggregate events
-        # into summaries e.g. average house temperature, max humidity, etc.
-        pass
+    def get_metrics(connected_devices) -> dict:
+        # average house temperature
+        temperature_sum = functools.reduce(lambda sum_, payload: sum_ + AnalyticsEngine.get_temperature(payload),
+                                   connected_devices.values(), 0.0)
+        total_thermostats = sum(1 for payload in connected_devices.values() if isinstance(payload, ThermostatPayload))
+        average_temperature = temperature_sum / total_thermostats if total_thermostats > 0 else 0.0
+
+        # average house humidity
+        humidity_sum = functools.reduce(lambda sum_, payload: sum_ + AnalyticsEngine.get_humidity(payload),
+                                   connected_devices.values(), 0.0)
+        average_humidity = humidity_sum / total_thermostats if total_thermostats > 0 else 0.0
+
+        # total connected devices
+        total_devices = len(connected_devices)
+        return {
+            "average_temperature": average_temperature,
+            "average_humidity": average_humidity,
+            "total_connected_devices": total_devices,
+        }
+
+    @staticmethod
+    def get_temperature(payload) -> float:
+        """
+        Given a payload, returns the temperature if the payload
+        is from a thermostat device and from an indoor location.
+        """
+        INDOOR_LOCATIONS = [
+            DeviceLocation.LIVING_ROOM,
+            DeviceLocation.BEDROOM,
+            DeviceLocation.KITCHEN,
+            DeviceLocation.BATHROOM,
+            DeviceLocation.OFFICE,
+            DeviceLocation.HALLWAY,
+            DeviceLocation.DINING_ROOM
+        ]
+        if isinstance(payload, ThermostatPayload) and payload.location in INDOOR_LOCATIONS:
+            return payload.current_temp
+        return 0.0
+
+    @staticmethod
+    def get_humidity(payload) -> float:
+        """
+        Given a payload, returns the humidity if the payload
+        is from a thermostat device.
+        """
+        if isinstance(payload, ThermostatPayload):
+            return payload.humidity
+        return 0.0
+
+

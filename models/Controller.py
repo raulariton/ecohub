@@ -3,7 +3,7 @@ import queue
 import threading
 
 from models.AnalyticsEngine import AnalyticsEngine
-from models.devices import SmartDevice
+from models.devices import SmartDevice, DevicePayload
 from .CriticalEvent import CriticalEvent
 from .StorageWorker import StorageWorker
 
@@ -12,7 +12,7 @@ class Controller:
     def __init__(self):
         # storing received packets
         self._packet_queue = asyncio.Queue()
-        self._connected_devices: list[SmartDevice] = []
+        self._connected_devices: dict[SmartDevice, DevicePayload] = {}
 
         # initialize storage queue and storage worker
         self._storage_queue = queue.Queue()
@@ -25,12 +25,14 @@ class Controller:
         )
         self._storage_worker_thread.start()
 
-    async def connect(self, device: SmartDevice) -> asyncio.Queue:
+    async def connect(self, device: SmartDevice, payload: str) -> asyncio.Queue:
         """
         Adds the device to the list of connected devices
         and returns the packet queue to be used by the device to send packets.
         """
-        self._connected_devices.append(device)
+        # parse payload into DevicePayload object
+        device_payload = AnalyticsEngine.parse_payload(payload)
+        self._connected_devices[device] = device_payload
         return self._packet_queue
 
     def handle_critical_event(self, payload, critical_event):
@@ -90,17 +92,32 @@ class Controller:
         while True:
             packets = await self._packet_queue.get()
 
-            # map packets to payloads
-            payloads = list(AnalyticsEngine.map_packet(packets))
+            # parse payloads from packets
+            payloads = list(AnalyticsEngine.parse_payload(packets))
+
+            # update connected device payloads
+            for payload in payloads:
+                # get device object using device id given in payload
+                device = next(
+                    (
+                        device
+                        for device in self._connected_devices
+                        if str(device.id) == payload.device_id
+                    )
+                )
+                # update stored payload
+                self._connected_devices[device] = payload
 
             # filter and handle critical events
             for payload, critical_event in AnalyticsEngine.filter_events(payloads):
                 self.handle_critical_event(payload, critical_event)
 
-            # reduce payloads to summaries
-            summaries = AnalyticsEngine.reduce(payloads)
-            if summaries:
-                print(f"Summaries: {summaries}")
+            metrics = AnalyticsEngine.get_metrics(self._connected_devices)
+            print(f"""
+            AVERAGE HOUSE TEMPERATURE: {metrics["average_temperature"]:.2f} °C
+            AVERAGE HOUSE HUMIDITY: {metrics["average_humidity"]:.2f} %
+            TOTAL CONNECTED DEVICES: {metrics["total_connected_devices"]}
+            """)
 
             # send payloads to storage queue
             for payload in payloads:

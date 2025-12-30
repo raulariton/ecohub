@@ -38,7 +38,7 @@ def is_critical(payload) -> CriticalEvent | None:
 
 class AnalyticsEngine:
     @staticmethod
-    def map_packet(packet):
+    def parse_payload(packet):
         packet_data = json.loads(packet)
         timestamp = datetime.fromisoformat(packet_data["timestamp"])
         device_type = packet_data["payload"]["device_type"]

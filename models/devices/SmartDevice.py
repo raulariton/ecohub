@@ -24,7 +24,7 @@ class SmartDevice(ABC):
         self._controller_queue: asyncio.Queue | None = None
 
     @abstractmethod
-    def get_status(self) -> str:
+    def get_status(self) -> dict:
         pass
 
     @abstractmethod
@@ -36,8 +36,14 @@ class SmartDevice(ABC):
         pass
 
     async def connect(self, controller: Controller) -> None:
-        # simulate connection (async io delay)
-        self._controller_queue = await controller.connect(self)
+        # send a payload to the controller to register the device
+        status = self.get_status()
+        packet = {
+            "device_id": str(self._id),
+            "timestamp": datetime.now().isoformat(),
+            "payload": status,
+        }
+        self._controller_queue = await controller.connect(self, json.dumps(packet))
         print(f"Device {self._name} connected.")
 
     async def run(self, controller: Controller) -> None:

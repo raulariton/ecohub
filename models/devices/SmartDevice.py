@@ -1,4 +1,5 @@
 import json
+import random
 from abc import ABC, abstractmethod
 import uuid
 from datetime import datetime
@@ -57,12 +58,14 @@ class SmartDevice(ABC):
                 "payload": status,
             }
 
+            print(f"[{datetime.now()}]: Device {self._name} sending status")
             await self._controller_queue.put(json.dumps(packet))
+            print(f"[{datetime.now()}]: Device {self._name} status sent")
 
             # update device state to simulate changes over time
             self.update_state()
 
-            await asyncio.sleep(1)  # send status every 5 seconds
+            await asyncio.sleep(random.uniform(1,2))  # send status every 5 seconds
 
     @property
     def id(self):

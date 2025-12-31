@@ -1,6 +1,8 @@
 import asyncio
 import queue
 import threading
+from datetime import datetime
+import time
 
 from models.AnalyticsEngine import AnalyticsEngine
 from models.devices import SmartDevice, DevicePayload
@@ -98,37 +100,12 @@ class Controller:
             # wait for packets from devices
             # this does not block, meaning device objects can still send packets
             packets = await self._packet_queue.get()
+            print(f"[{datetime.now()}]: Controller received packet")
 
-            # parse payloads from packets
-            payloads = list(AnalyticsEngine.parse_payload(packets))
-
-            # update connected device payloads
-            for payload in payloads:
-                # get device object using device id given in payload
-                device = next(
-                    (
-                        device
-                        for device in self._connected_devices
-                        if str(device.id) == payload.device_id
-                    )
-                )
-                # update stored payload
-                self._connected_devices[device] = payload
-
-            # filter and handle critical events
-            for payload, critical_event in AnalyticsEngine.filter_events(payloads):
-                self.handle_critical_event(payload, critical_event)
-
-            metrics = AnalyticsEngine.get_metrics(self._connected_devices)
-            print(f"""
-            AVERAGE HOUSE TEMPERATURE: {metrics["average_temperature"]:.2f} °C
-            AVERAGE HOUSE HUMIDITY: {metrics["average_humidity"]:.2f} %
-            TOTAL CONNECTED DEVICES: {metrics["total_connected_devices"]}
-            """)
-
-            # send payloads to storage queue
-            for payload in payloads:
-                self._storage_queue.put(payload)
+            # simulate long processing time
+            print("Analyzing packet...")
+            time.sleep(10)
+            print("Packet analysis complete.")
 
     def end_storage_thread(self):
         # send None to storage queue to signal worker to stop

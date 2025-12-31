@@ -130,8 +130,6 @@ class Controller:
             for payload in payloads:
                 self._storage_queue.put(payload)
 
-            self._storage_queue.task_done()
-
     def end_storage_thread(self):
         # send None to storage queue to signal worker to stop
         self._storage_queue.put(None)

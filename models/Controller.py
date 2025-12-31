@@ -95,6 +95,8 @@ class Controller:
 
     async def consume(self):
         while True:
+            # wait for packets from devices
+            # this does not block, meaning device objects can still send packets
             packets = await self._packet_queue.get()
 
             # parse payloads from packets

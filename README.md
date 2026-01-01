@@ -4,6 +4,10 @@ A simulation of an internet of things (IoT) system with smart devices and a cent
 
 This project aims to incorporate concepts from OOP Python, concurrent programming with the `asyncio` module as well as with threads, and functional programming concepts.
 
+### Demo
+
+![EcoHub Demo](assets/demo.gif)
+
 ## How it works
 
 - Smart devices (smart bulbs, smart thermostats, smart cameras) connect to a controller and, as their state changes over time (temperature changes, motion detection, humidity changes), they send updates to the controller in the form of packets containing payloads.
